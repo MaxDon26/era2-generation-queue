@@ -1,0 +1,16 @@
+@import 'tailwindcss';
+
+/* Class-based переключатель темы: <html class="dark"> / без класса = light.
+   Конкретные значения токенов (warm coal / light) задаются в фазе B/D. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /* Акцент дизайн-системы ERA2 (тз.md:201). Полная палитра — фаза B/D. */
+  --color-accent: #e85420;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}

@@ -1,0 +1,19 @@
+node_modules
+dist
+dist-ssr
+coverage
+*.local
+*.log
+.DS_Store
+.idea
+.vscode/*
+!.vscode/extensions.json
+
+# Служебное / не часть продукта
+тз.md
+claude.bat
+figma/
+.claude/
+
+# Артефакты сборки
+*.tsbuildinfo
