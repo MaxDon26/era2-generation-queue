@@ -4,6 +4,19 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>ERA2 — Очередь генераций</title>
+    <script>
+      // Анти-вспышка: ставим тему на <html> ДО отрисовки, читая сохранённое значение
+      // (zustand persist хранит как {"state":{"theme":"..."},"version":0}). Дефолт — тёмная.
+      ;(function () {
+        try {
+          var raw = localStorage.getItem('era2-theme')
+          var theme = raw ? JSON.parse(raw).state.theme : 'dark'
+          document.documentElement.classList.toggle('dark', theme !== 'light')
+        } catch (e) {
+          document.documentElement.classList.add('dark')
+        }
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>
