@@ -5,7 +5,7 @@ export interface QueueFilters {
   status: TaskStatus | 'all'
   type?: GenType | 'all'
   search: string
-  sort: 'newest' | 'oldest' | 'status' | 'progress'
+  sort: 'queue' | 'newest' | 'oldest' | 'status' | 'progress'
 }
 
 /** 4 счётчика (тз.md:138) + total для различения «пусто вообще» / «пусто под фильтром». */
@@ -53,6 +53,24 @@ export function selectVisibleTasks(s: QueueState, f: QueueFilters): GenerationTa
 
   const sorted = [...list]
   switch (f.sort) {
+    case 'queue': {
+      // Порядок исполнения: running → queued(по queueOrder) → завершённые(новее выше).
+      // Используется как режим по умолчанию и единственный, где доступен drag-reorder.
+      const rank = (t: GenerationTask): [number, number] => {
+        if (t.status === 'running') return [0, 0]
+        if (t.status === 'queued') {
+          const i = s.queueOrder.indexOf(t.id)
+          return [1, i < 0 ? Number.MAX_SAFE_INTEGER : i]
+        }
+        return [2, -t.createdAt]
+      }
+      sorted.sort((a, b) => {
+        const ra = rank(a)
+        const rb = rank(b)
+        return ra[0] - rb[0] || ra[1] - rb[1]
+      })
+      break
+    }
     case 'newest':
       sorted.sort((a, b) => b.createdAt - a.createdAt)
       break

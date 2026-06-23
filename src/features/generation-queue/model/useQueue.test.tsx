@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { createSeed } from '@/entities/generation-task'
 import { initialState } from './queueReducer'
 import { useQueueStore } from './queueStore'
-import { useActiveAggregate, useQueue } from './useQueue'
+import { useActiveAggregate, useQueue, useQueuePosition } from './useQueue'
 
 afterEach(() => {
   useQueueStore.setState({ ...initialState })
@@ -32,5 +32,11 @@ describe('useQueue', () => {
     const { result } = renderHook(() => useActiveAggregate())
     expect(typeof result.current.activeCount).toBe('number')
     expect(result.current.activeCount).toBeGreaterThan(0)
+  })
+
+  it('useQueuePosition отдаёт позицию в очереди', () => {
+    useQueueStore.setState({ phase: 'ready', queueOrder: ['a', 'b', 'c'] })
+    const { result } = renderHook(() => useQueuePosition('b'))
+    expect(result.current).toBe(2)
   })
 })

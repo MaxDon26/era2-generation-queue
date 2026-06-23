@@ -5,6 +5,7 @@ import { useQueueStore } from './queueStore'
 import {
   selectActiveAggregate,
   selectCounts,
+  selectQueuePosition,
   selectVisibleTasks,
   type QueueFilters,
 } from './selectors'
@@ -34,10 +35,16 @@ export function useQueue() {
 /** Видимый список под фильтры (фаза D передаёт стабильный filters). */
 export function useVisibleTasks(filters: QueueFilters) {
   const tasks = useQueueStore((s) => s.tasks)
+  const queueOrder = useQueueStore((s) => s.queueOrder)
   return useMemo(
-    () => selectVisibleTasks({ phase: 'ready', tasks, queueOrder: [], undo: null }, filters),
-    [tasks, filters],
+    () => selectVisibleTasks({ phase: 'ready', tasks, queueOrder, undo: null }, filters),
+    [tasks, queueOrder, filters],
   )
+}
+
+/** Позиция задачи в очереди исполнения (для меты TaskRow) или null. */
+export function useQueuePosition(id: string): number | null {
+  return useQueueStore((s) => selectQueuePosition(s, id))
 }
 
 /** Узкий хук для глобального статус-бара (единый источник правды со списком). */

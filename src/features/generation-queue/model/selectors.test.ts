@@ -50,6 +50,21 @@ describe('selectors', () => {
     expect(selectVisibleTasks(s, { status: 'all', search: '', sort: 'oldest' }).map((t) => t.id)).toEqual(['a', 'b'])
   })
 
+  it('selectVisibleTasks sort=queue: running → queued(по queueOrder) → завершённые(новее выше)', () => {
+    const s = state(
+      [
+        mk({ id: 'q1', status: 'queued', createdAt: 1 }),
+        mk({ id: 'q2', status: 'queued', createdAt: 2 }),
+        mk({ id: 'r1', status: 'running', progress: 10, startedAt: 0, createdAt: 5 }),
+        mk({ id: 'd1', status: 'done', progress: 100, startedAt: 0, finishedAt: 1, createdAt: 3 }),
+        mk({ id: 'f1', status: 'failed', progress: 5, startedAt: 0, finishedAt: 1, error: 'e', createdAt: 4 }),
+      ],
+      ['q2', 'q1'],
+    )
+    const out = selectVisibleTasks(s, { status: 'all', search: '', sort: 'queue' }).map((t) => t.id)
+    expect(out).toEqual(['r1', 'q2', 'q1', 'f1', 'd1'])
+  })
+
   it('selectQueuePosition по queueOrder', () => {
     const s = state([mk({ id: 'a', status: 'queued' }), mk({ id: 'b', status: 'queued' })], ['a', 'b'])
     expect(selectQueuePosition(s, 'b')).toBe(2)
