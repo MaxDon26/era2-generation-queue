@@ -2,5 +2,6 @@
 export { QueueProvider } from './model/QueueProvider'
 export { queueEngine } from './model/queueEngine'
 export { useQueue, useVisibleTasks, useActiveAggregate, useQueuePosition } from './model/useQueue'
+export { useUndo } from './model/useUndo'
 export { formatEta, formatDuration, formatCredits } from './lib/formatEta'
 export type { QueueFilters } from './model/selectors'
