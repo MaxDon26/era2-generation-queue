@@ -1,3 +1,4 @@
-// Публичный API фичи generation-queue. Наполняется на Этапах 1–3 (фазы C, D):
-// useQueue, селекторы, UI-компоненты, глобальный статус-бар.
-export {}
+// Публичный API фичи generation-queue.
+export { queueEngine } from './model/queueEngine'
+export { useQueue, useVisibleTasks, useActiveAggregate } from './model/useQueue'
+export type { QueueFilters } from './model/selectors'
