@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { restoreRunningToQueued } from './queueReducer'
+import { resumeRunning } from './queueReducer'
 import type { GenerationTask } from '@/entities/generation-task'
 
 const mk = (over: Partial<GenerationTask> & Pick<GenerationTask, 'id' | 'status'>): GenerationTask =>
@@ -8,28 +8,26 @@ const mk = (over: Partial<GenerationTask> & Pick<GenerationTask, 'id' | 'status'
     createdAt: 0, progress: 0, ...over,
   }) as GenerationTask
 
-describe('restoreRunningToQueued', () => {
-  it('running → queued (progress 0, без startedAt), в начало queueOrder по startedAt', () => {
+describe('resumeRunning (продолжение прогресса при перезагрузке, тз.md:4.7)', () => {
+  it('running сохраняет progress и статус, startedAt пересчитан под now', () => {
+    const now = 1_000_000
     const tasks: Record<string, GenerationTask> = {
-      r1: mk({ id: 'r1', status: 'running', progress: 70, startedAt: 200 }),
-      r2: mk({ id: 'r2', status: 'running', progress: 30, startedAt: 100 }),
-      q9: mk({ id: 'q9', status: 'queued' }),
+      r1: mk({ id: 'r1', status: 'running', progress: 70, estimatedDurationMs: 10_000, startedAt: 5 }),
     }
-    const res = restoreRunningToQueued(tasks, ['q9'])
-    expect(res.tasks.r1.status).toBe('queued')
-    expect(res.tasks.r1.progress).toBe(0)
-    if (res.tasks.r1.status === 'queued') expect('startedAt' in res.tasks.r1).toBe(false)
-    // r2 стартовал раньше (startedAt 100) → раньше в очереди; затем r1; затем существующая q9
-    expect(res.queueOrder).toEqual(['r2', 'r1', 'q9'])
+    const res = resumeRunning(tasks, now)
+    expect(res.r1.status).toBe('running')
+    expect(res.r1.progress).toBe(70)
+    // прошло 70% от 10000мс = 7000мс → startedAt = now - 7000 (длительность/ETA консистентны)
+    if (res.r1.status === 'running') expect(res.r1.startedAt).toBe(now - 7000)
   })
 
-  it('без running — состояние не меняется по статусам', () => {
+  it('не-running задачи не трогает', () => {
     const tasks: Record<string, GenerationTask> = {
       d1: mk({ id: 'd1', status: 'done', progress: 100, startedAt: 0, finishedAt: 1 }),
       q1: mk({ id: 'q1', status: 'queued' }),
     }
-    const res = restoreRunningToQueued(tasks, ['q1'])
-    expect(res.tasks.d1.status).toBe('done')
-    expect(res.queueOrder).toEqual(['q1'])
+    const res = resumeRunning(tasks, 999)
+    expect(res.d1.status).toBe('done')
+    expect(res.q1.status).toBe('queued')
   })
 })

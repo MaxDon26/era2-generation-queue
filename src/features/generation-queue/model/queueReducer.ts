@@ -36,26 +36,25 @@ export function base(t: GenerationTask) {
 }
 
 /**
- * Привести восстановленное из localStorage состояние к корректному виду (тз.md:4.7):
- * незавершённые `running` переводятся в `queued` (тип `QueuedTask` форсирует progress:0
- * и отсутствие startedAt — частичный прогресс теряется by design). Восстановленные
- * задачи встают в НАЧАЛО очереди, отсортированные по бывшему startedAt (продолжатся первыми).
+ * Восстановление прогресса при перезагрузке (тз.md:4.7, вариант «продолжить»):
+ * `running`-задачи остаются `running` с СОХРАНЁННЫМ progress — движок продолжит с того же
+ * места, а не начнёт заново. `startedAt` пересчитывается как `now − прошедшее_время`
+ * (из progress), чтобы длительность/ETA остались консистентными после перезагрузки.
+ * Остальные статусы не трогаются; `queueOrder` сохраняется как был.
  */
-export function restoreRunningToQueued(
+export function resumeRunning(
   tasks: Record<string, GenerationTask>,
-  queueOrder: string[],
-): { tasks: Record<string, GenerationTask>; queueOrder: string[] } {
+  now: number,
+): Record<string, GenerationTask> {
   const result = { ...tasks }
-  const restored: { id: string; startedAt: number }[] = []
   for (const id of Object.keys(result)) {
     const t = result[id]
     if (t.status === 'running') {
-      restored.push({ id, startedAt: t.startedAt })
-      result[id] = { ...base(t), status: 'queued', progress: 0 }
+      const elapsed = (t.progress / 100) * t.estimatedDurationMs
+      result[id] = { ...base(t), status: 'running', progress: t.progress, startedAt: now - elapsed }
     }
   }
-  restored.sort((a, b) => a.startedAt - b.startedAt)
-  return { tasks: result, queueOrder: [...restored.map((r) => r.id), ...queueOrder] }
+  return result
 }
 
 const clamp = (n: number) => Math.min(100, Math.max(0, n))
