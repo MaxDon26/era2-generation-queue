@@ -1,3 +1,2 @@
-// Публичный API виджета generation-queue. Наполняется в фазе D:
-// GenerationQueue — композиция экрана (provider + stats + toolbar + список).
-export {}
+// Публичный API виджета generation-queue.
+export { GenerationQueue } from './ui/GenerationQueue'

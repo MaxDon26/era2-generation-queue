@@ -1,9 +1,11 @@
 import { useMemo } from 'react'
 import { useShallow } from 'zustand/react/shallow'
+import type { ActiveTask } from '@/entities/generation-task'
 import { queueEngine } from './queueEngine'
 import { useQueueStore } from './queueStore'
 import {
   selectActiveAggregate,
+  selectActiveTasks,
   selectCounts,
   selectQueuePosition,
   selectVisibleTasks,
@@ -50,4 +52,11 @@ export function useQueuePosition(id: string): number | null {
 /** Узкий хук для глобального статус-бара (единый источник правды со списком). */
 export function useActiveAggregate() {
   return useQueueStore(useShallow(selectActiveAggregate))
+}
+
+/** Активные задачи для мини-списка статус-бара (running→queued, срез limit). */
+export function useActiveTasks(limit: number): ActiveTask[] {
+  const tasks = useQueueStore((s) => s.tasks)
+  const queueOrder = useQueueStore((s) => s.queueOrder)
+  return useMemo(() => selectActiveTasks({ tasks, queueOrder }, limit), [tasks, queueOrder, limit])
 }

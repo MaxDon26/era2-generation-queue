@@ -71,13 +71,14 @@ describe('selectors', () => {
     expect(selectQueuePosition(s, 'x')).toBeNull()
   })
 
-  it('selectActiveAggregate: activeCount=running+queued, avgProgress по running', () => {
+  it('selectActiveAggregate: avgProgress по всем активным (running + queued)', () => {
     const s = state([
       mk({ id: 'r1', status: 'running', progress: 40, startedAt: 0 }),
       mk({ id: 'r2', status: 'running', progress: 60, startedAt: 0 }),
       mk({ id: 'q1', status: 'queued' }),
     ])
-    expect(selectActiveAggregate(s)).toEqual({ activeCount: 3, avgProgress: 50 })
+    // (40 + 60 + 0) / 3 = 33
+    expect(selectActiveAggregate(s)).toEqual({ activeCount: 3, avgProgress: 33 })
   })
 
   it('selectActiveAggregate: без running avgProgress=0', () => {

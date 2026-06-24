@@ -17,3 +17,11 @@ figma/
 
 # Артефакты сборки
 *.tsbuildinfo
+
+# Playwright артефакты
+.playwright-mcp/
+queue-*.png
+
+# Служебное (kanban-механика, не часть продукта)
+.tasks/
+KANBAN.md

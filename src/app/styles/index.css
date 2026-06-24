@@ -1,16 +1,191 @@
 @import 'tailwindcss';
 
-/* Class-based переключатель темы: <html class="dark"> / без класса = light.
-   Конкретные значения токенов (warm coal / light) задаются в фазе B/D. */
+/* Шрифты Geist (variable, тз.md:202). Фолбэк Inter/system — если не загрузится. */
+@import '@fontsource-variable/geist';
+@import '@fontsource-variable/geist-mono';
+
+/* ─────────────────────────────────────────────────────────────────────────
+   ERA2 — токен-система (warm coal). Источник: Figma `Foundations` (Canvas/Dark),
+   значения сэмплированы пиксельно из figma/img/2-2.png; акцент #E85420 — тз.md:201.
+
+   Три слоя:
+   1. RAW палитра era/*      — физические цвета, НЕ зависят от темы (@theme)
+   2. Semantic (--background…) — переопределяется по теме (:root=light / .dark=dark)
+   3. @theme inline           — привязка semantic к утилитам (bg-background, text-foreground…)
+
+   Правило тем: компоненты используют ТОЛЬКО semantic-утилиты, никогда не raw era/*.
+   Тёмная — canon (макет). <html class="dark"> по умолчанию. Снятие класса → светлая.
+   ───────────────────────────────────────────────────────────────────────── */
+
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ── Слой 1: RAW палитра + шрифты + радиусы + типошкала (тема-независимо) ── */
 @theme {
-  /* Акцент дизайн-системы ERA2 (тз.md:201). Полная палитра — фаза B/D. */
-  --color-accent: #e85420;
+  /* ERA2 RAW PALETTE (Foundations · из пикселей 2-2.png) */
+  --color-era-bg: #0e0b0a;
+  --color-era-bg-1: #141110;
+  --color-era-bg-2: #1a1614;
+  --color-era-bg-3: #221c19;
+  --color-era-line: #2d2420;
+  --color-era-fg: #f6efe9;
+  --color-era-fg-dim: #c8beb6;
+  --color-era-fg-mute: #8a7f78;
+  --color-era-fg-low: #5a504a;
+  --color-era-accent: #e85420;
+  --color-era-accent-2: #ff7a3d;
+  --color-era-accent-soft: #3a1a0a;
+  --color-era-accent-hi: #ffb27a;
+  /* Статусные (нет в era-секции, требуются по тз.md:201) */
+  --color-era-success: #34d399;
+  --color-era-destructive: #ff5f57;
+
+  /* Шрифты (тз.md:202 — Geist / Geist Mono, фолбэк Inter) */
+  --font-sans: 'Geist Variable', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Geist Mono Variable', ui-monospace, 'SF Mono', monospace;
+
+  /* Радиусы (из макета) */
+  --radius-sm: 8px;
+  --radius-chip: 12px;
+  --radius-control: 14px;
+  --radius-panel: 18px;
+  --radius-card: 22px;
+  --radius-full: 9999px;
+
+  /* Типошкала (из Foundations · Typography) */
+  --text-display: 72px;
+  --text-display--line-height: 71px;
+  --text-display--font-weight: 600;
+  --text-display--letter-spacing: -0.035em;
+
+  --text-h2: 48px;
+  --text-h2--line-height: 49px;
+  --text-h2--font-weight: 600;
+  --text-h2--letter-spacing: -0.03em;
+
+  --text-h3: 24px;
+  --text-h3--line-height: 29px;
+  --text-h3--font-weight: 600;
+  --text-h3--letter-spacing: -0.015em;
+
+  --text-h4: 20px;
+  --text-h4--line-height: 26px;
+  --text-h4--font-weight: 600;
+  --text-h4--letter-spacing: -0.01em;
+
+  --text-body-lg: 16px;
+  --text-body-lg--line-height: 24px;
+
+  --text-body: 14px;
+  --text-body--line-height: 20px;
+
+  --text-caption: 12px;
+  --text-caption--line-height: 16px;
 }
 
+/* ── Слой 2: Semantic-токены. :root = СВЕТЛАЯ тема ──
+   ⚠ Светлая тема ВЫВЕДЕНА из warm-coal (в макете её нет, тз.md:215 — бонус).
+   Значения предварительные, подлежат подгонке дизайнером. */
+:root {
+  --background: #faf6f2;
+  --foreground: #1a1514;
+  --foreground-secondary: #3a322d;
+  --card: #fffdfb;
+  --card-foreground: #1a1514;
+  --popover: #ffffff;
+  --popover-foreground: #1a1514;
+  --secondary: #f2eae2;
+  --secondary-foreground: #1a1514;
+  --muted: #f2eae2;
+  --muted-foreground: #8a7f78;
+  --border: #e8ddd4;
+  --input: #e8ddd4;
+  --primary: #e85420;
+  --primary-foreground: #ffffff;
+  --accent: #ffe9dd;
+  --accent-foreground: #c2410c;
+  --ring: #e85420;
+  --destructive: #d83a30;
+  --destructive-foreground: #ffffff;
+  --success: #0f9d6b;
+}
+
+/* ── ТЁМНАЯ тема — canon (точные значения из макета) ── */
+.dark {
+  --background: #0e0b0a;
+  --foreground: #f6efe9;
+  --foreground-secondary: #c8beb6;
+  --card: #141110;
+  --card-foreground: #f6efe9;
+  --popover: #141110;
+  --popover-foreground: #f6efe9;
+  --secondary: #1a1614;
+  --secondary-foreground: #f6efe9;
+  --muted: #1a1614;
+  --muted-foreground: #8a7f78;
+  --border: #2d2420;
+  --input: #2d2420;
+  --primary: #e85420;
+  --primary-foreground: #ffffff;
+  --accent: #3a1a0a;
+  --accent-foreground: #ff7a3d;
+  --ring: #e85420;
+  --destructive: #ff5f57;
+  --destructive-foreground: #ffffff;
+  --success: #34d399;
+}
+
+/* ── Слой 3: привязка semantic → утилиты Tailwind (bg-background, text-foreground…) ── */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-foreground-secondary: var(--foreground-secondary);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-ring: var(--ring);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+}
+
+/* ── База ── */
 html,
 body,
 #root {
   height: 100%;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Скрыть полосу прокрутки, сохранив сам скролл (горизонтальные чипы-фильтры на mobile). */
+@utility scrollbar-hide {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+/* Кликабельные элементы показывают курсор-указатель (нативно у <button> курсор — стрелка). */
+button:not(:disabled),
+[role='button'],
+[role='radio']:not(:disabled),
+select:not(:disabled) {
+  cursor: pointer;
 }

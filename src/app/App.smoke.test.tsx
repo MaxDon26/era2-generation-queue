@@ -7,4 +7,11 @@ describe('App (smoke)', () => {
     render(<App />)
     expect(screen.getByRole('heading', { name: 'Очередь генераций' })).toBeInTheDocument()
   })
+
+  it('рендерит страницу-заглушку чата на /chat', () => {
+    window.history.pushState({}, '', '/chat')
+    render(<App />)
+    expect(screen.getByText(/здесь живёт глобальный статус-бар/i)).toBeInTheDocument()
+    window.history.pushState({}, '', '/')
+  })
 })

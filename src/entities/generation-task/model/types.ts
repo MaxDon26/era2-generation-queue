@@ -83,3 +83,6 @@ export type GenerationTask =
   | DoneTask
   | FailedTask
   | CanceledTask
+
+/** Активная задача (для статус-бара): только обрабатывается или ждёт очереди. */
+export type ActiveTask = RunningTask | QueuedTask

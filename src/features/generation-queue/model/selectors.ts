@@ -1,4 +1,11 @@
-import type { GenerationTask, GenType, TaskStatus } from '@/entities/generation-task'
+import type {
+  ActiveTask,
+  GenerationTask,
+  GenType,
+  QueuedTask,
+  RunningTask,
+  TaskStatus,
+} from '@/entities/generation-task'
 import type { QueueState } from './queueReducer'
 
 export interface QueueFilters {
@@ -95,10 +102,31 @@ export function selectQueuePosition(s: QueueState, id: string): number | null {
 
 /** Агрегат для глобального статус-бара (тз.md:179,182): activeCount и средний прогресс по running. */
 export function selectActiveAggregate(s: QueueState) {
-  const running = Object.values(s.tasks).filter((t) => t.status === 'running')
-  const queued = Object.values(s.tasks).filter((t) => t.status === 'queued')
-  const avgProgress = running.length
-    ? Math.round(running.reduce((sum, t) => sum + t.progress, 0) / running.length)
+  const active = Object.values(s.tasks).filter(
+    (t) => t.status === 'running' || t.status === 'queued',
+  )
+  // Усреднённый прогресс по ВСЕМ активным (running + queued), чтобы N и X% в баре
+  // относились к одному множеству (queued учитываются с progress 0).
+  const avgProgress = active.length
+    ? Math.round(active.reduce((sum, t) => sum + t.progress, 0) / active.length)
     : 0
-  return { activeCount: running.length + queued.length, avgProgress }
+  return { activeCount: active.length, avgProgress }
+}
+
+/**
+ * Активные задачи для статус-бара (тз.md:182): сначала `running` (по убыванию прогресса,
+ * тайтбрейкер — по возрастанию `startedAt`), затем `queued` (по `queueOrder`); срез до `limit`.
+ */
+export function selectActiveTasks(
+  s: Pick<QueueState, 'tasks' | 'queueOrder'>,
+  limit: number,
+): ActiveTask[] {
+  const all = Object.values(s.tasks)
+  const running = all
+    .filter((t): t is RunningTask => t.status === 'running')
+    .sort((a, b) => b.progress - a.progress || a.startedAt - b.startedAt)
+  const queued = all
+    .filter((t): t is QueuedTask => t.status === 'queued')
+    .sort((a, b) => s.queueOrder.indexOf(a.id) - s.queueOrder.indexOf(b.id))
+  return [...running, ...queued].slice(0, limit)
 }

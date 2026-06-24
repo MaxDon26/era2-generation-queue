@@ -3,6 +3,7 @@ export type {
   GenType,
   TaskStatus,
   GenerationTask,
+  ActiveTask,
   QueuedTask,
   RunningTask,
   DoneTask,
@@ -10,3 +11,4 @@ export type {
   CanceledTask,
 } from './model/types'
 export { createSeed } from './model/seed'
+export { GEN_TYPE_LABEL, genTitle } from './model/labels'
