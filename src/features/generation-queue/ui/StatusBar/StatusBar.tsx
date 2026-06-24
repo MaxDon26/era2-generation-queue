@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowRight, Loader2 } from 'lucide-react'
-import { Link, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { declineGenerations } from '@/shared/lib/declineGenerations'
 import { useActiveAggregate, useActiveTasks } from '../../model/useQueue'
 import { useStatusBarCollapsed } from '../../model/useStatusBarCollapsed'
@@ -51,6 +50,7 @@ export function StatusBar() {
         {visible && (
           <motion.aside
             key="statusbar"
+            layout
             variants={variants}
             initial="initial"
             animate="animate"
@@ -60,40 +60,35 @@ export function StatusBar() {
             aria-label="Статус генераций"
             className="fixed inset-x-3 bottom-3 z-40 flex justify-center pb-[env(safe-area-inset-bottom)] sm:inset-x-auto sm:bottom-6 sm:right-6 sm:justify-end sm:pb-0"
           >
-            {/* mobile: компактная полоса на всю ширину */}
-            <Link
-              to="/queue"
-              className="flex w-full items-center gap-2.5 rounded-control border border-primary bg-secondary px-4 py-3 outline-none focus-visible:ring-2 focus-visible:ring-ring sm:hidden"
-            >
-              <Loader2
-                aria-hidden="true"
-                className="size-4 shrink-0 animate-spin text-primary motion-reduce:animate-none"
-              />
-              <span className="flex-1 text-sm text-foreground">
-                {activeCount} {declineGenerations(activeCount)} · {avgProgress}%
-              </span>
-              <ArrowRight aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
-            </Link>
-
-            {/* desktop/tablet: pill / single / multi */}
-            <div className="hidden sm:block">
-              {mode === 'pill' && (
-                <StatusPill
-                  activeCount={activeCount}
-                  avgProgress={avgProgress}
-                  onExpand={() => setCollapsed(false)}
-                />
-              )}
-              {mode === 'single' && tasks[0] && <StatusSingle task={tasks[0]} />}
-              {mode === 'multi' && (
-                <StatusMulti
-                  tasks={tasks}
-                  activeCount={activeCount}
-                  avgProgress={avgProgress}
-                  onCollapse={() => setCollapsed(true)}
-                />
-              )}
-            </div>
+            {/* Плавная смена состояний pill ↔ single ↔ multi (mode="wait"); размер панели
+                анимируется layout. Редирект на /queue — только по ссылке «Открыть очередь». */}
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={mode}
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={{ duration: 0.15 }}
+                className="w-full sm:w-auto"
+              >
+                {mode === 'pill' && (
+                  <StatusPill
+                    activeCount={activeCount}
+                    avgProgress={avgProgress}
+                    onExpand={() => setCollapsed(false)}
+                  />
+                )}
+                {mode === 'single' && tasks[0] && <StatusSingle task={tasks[0]} />}
+                {mode === 'multi' && (
+                  <StatusMulti
+                    tasks={tasks}
+                    activeCount={activeCount}
+                    avgProgress={avgProgress}
+                    onCollapse={() => setCollapsed(true)}
+                  />
+                )}
+              </motion.div>
+            </AnimatePresence>
           </motion.aside>
         )}
       </AnimatePresence>

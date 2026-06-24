@@ -34,7 +34,7 @@ export function Header() {
         <span className="hidden text-[13px] text-muted-foreground sm:inline">.ai</span>
       </div>
 
-      <nav className="hidden items-center gap-4 sm:flex">
+      <nav className="flex items-center gap-3 sm:gap-4">
         <NavLink to="/queue" className={navLinkClass}>
           Очередь
         </NavLink>

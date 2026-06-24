@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowRight, ChevronDown, Loader2 } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import type { ActiveTask } from '@/entities/generation-task'
@@ -14,7 +15,7 @@ interface StatusMultiProps {
 /** Развёрнутое состояние для нескольких активных задач (макет StatusBar/multi). */
 export function StatusMulti({ tasks, activeCount, avgProgress, onCollapse }: StatusMultiProps) {
   return (
-    <div className="w-[332px] rounded-panel border border-primary bg-secondary">
+    <div className="w-full rounded-panel border border-primary bg-secondary sm:w-[332px]">
       <div className="flex items-center gap-2.5 px-3.5 py-3">
         <Loader2
           aria-hidden="true"
@@ -37,26 +38,38 @@ export function StatusMulti({ tasks, activeCount, avgProgress, onCollapse }: Sta
       </div>
 
       <ul role="list" className="flex flex-col gap-2.5 px-3.5 pb-2.5">
-        {tasks.map((task) => (
-          <li key={task.id} className="flex items-center gap-2.5">
-            <TaskThumb type={task.type} className="size-7 rounded-lg" />
-            <div className="flex min-w-0 flex-1 flex-col gap-1">
-              <span className="truncate text-xs text-foreground-secondary">{task.prompt}</span>
-              {task.status === 'running' && (
-                <div aria-hidden="true">
-                  <ProgressBar value={task.progress} className="h-1 bg-track" />
-                </div>
+        <AnimatePresence initial={false}>
+          {tasks.map((task) => (
+            <motion.li
+              key={task.id}
+              layout
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.18 }}
+              className="flex items-center gap-2.5 overflow-hidden"
+            >
+              <TaskThumb type={task.type} className="size-7 rounded-lg" />
+              <div className="flex min-w-0 flex-1 flex-col gap-1">
+                <span className="truncate text-xs text-foreground-secondary">{task.prompt}</span>
+                {task.status === 'running' && (
+                  <div aria-hidden="true">
+                    <ProgressBar value={task.progress} className="h-1 bg-track" />
+                  </div>
+                )}
+              </div>
+              {task.status === 'running' ? (
+                <span className="shrink-0 font-mono text-[11px] font-medium text-accent-foreground">
+                  {Math.round(task.progress)}%
+                </span>
+              ) : (
+                <span className="shrink-0 text-[11px] font-medium text-muted-foreground">
+                  в очереди
+                </span>
               )}
-            </div>
-            {task.status === 'running' ? (
-              <span className="shrink-0 font-mono text-[11px] font-medium text-accent-foreground">
-                {Math.round(task.progress)}%
-              </span>
-            ) : (
-              <span className="shrink-0 text-[11px] font-medium text-muted-foreground">в очереди</span>
-            )}
-          </li>
-        ))}
+            </motion.li>
+          ))}
+        </AnimatePresence>
       </ul>
 
       <div className="border-t border-border px-4 py-2.5 text-center">

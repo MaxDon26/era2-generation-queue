@@ -7,7 +7,7 @@ import { TaskThumb } from '../taskParts'
 /** Развёрнутое состояние для одной активной задачи (макет StatusBar/single). */
 export function StatusSingle({ task }: { task: ActiveTask }) {
   return (
-    <div className="w-[332px] rounded-panel border border-primary bg-secondary">
+    <div className="w-full rounded-panel border border-primary bg-secondary sm:w-[332px]">
       <div className="flex items-center gap-2.5 px-3.5 py-3">
         <Loader2
           aria-hidden="true"
