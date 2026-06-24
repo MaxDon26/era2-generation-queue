@@ -4,7 +4,10 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { fileURLToPath, URL } from 'node:url'
 
-export default defineConfig({
+export default defineConfig(({ command }) => ({
+  // На GitHub Pages приложение живёт по пути /<repo>/ — base нужен для корректных
+  // путей к ассетам в прод-сборке. Для dev-сервера остаётся корень.
+  base: command === 'build' ? '/era2-generation-queue/' : '/',
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
@@ -17,4 +20,4 @@ export default defineConfig({
     setupFiles: ['./vitest.setup.ts'],
     css: true,
   },
-})
+}))

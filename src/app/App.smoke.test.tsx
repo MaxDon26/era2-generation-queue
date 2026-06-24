@@ -8,10 +8,10 @@ describe('App (smoke)', () => {
     expect(screen.getByRole('heading', { name: 'Очередь генераций' })).toBeInTheDocument()
   })
 
-  it('рендерит страницу-заглушку чата на /chat', () => {
-    window.history.pushState({}, '', '/chat')
+  it('рендерит страницу-заглушку чата на #/chat', () => {
+    window.location.hash = '#/chat'
     render(<App />)
     expect(screen.getByText(/здесь живёт глобальный статус-бар/i)).toBeInTheDocument()
-    window.history.pushState({}, '', '/')
+    window.location.hash = ''
   })
 })

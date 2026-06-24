@@ -1,12 +1,13 @@
 import { MotionConfig } from 'framer-motion'
-import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { QueueProvider, StatusBar } from '@/features/generation-queue'
 import { ChatPage } from '@/pages/ChatPage'
 import { QueuePage } from '@/pages/QueuePage'
 
 export function App() {
   return (
-    <BrowserRouter>
+    // HashRouter — для деплоя на GitHub Pages: маршрут в hash, refresh не даёт 404.
+    <HashRouter>
       <MotionConfig reducedMotion="user">
         <QueueProvider>
           <Routes>
@@ -17,6 +18,6 @@ export function App() {
           <StatusBar />
         </QueueProvider>
       </MotionConfig>
-    </BrowserRouter>
+    </HashRouter>
   )
 }
