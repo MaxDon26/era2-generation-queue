@@ -32,7 +32,7 @@ export function StatusSingle({ task }: { task: ActiveTask }) {
         <div className="flex min-w-0 flex-1 flex-col gap-1.5">
           <p className="truncate text-xs text-foreground-secondary">{task.prompt}</p>
           <div aria-hidden="true">
-            <ProgressBar value={task.progress} className="h-1 bg-era-bg-3" />
+            <ProgressBar value={task.progress} className="h-1 bg-track" />
           </div>
         </div>
       </div>

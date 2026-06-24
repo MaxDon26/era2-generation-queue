@@ -107,6 +107,8 @@
   --destructive: #d83a30;
   --destructive-foreground: #ffffff;
   --success: #0f9d6b;
+  /* Трек прогресс-бара: в светлой — тёплый полупрозрачный серый. */
+  --track: rgba(58, 50, 45, 0.12);
 }
 
 /* ── ТЁМНАЯ тема — canon (точные значения из макета) ── */
@@ -132,6 +134,8 @@
   --destructive: #ff5f57;
   --destructive-foreground: #ffffff;
   --success: #34d399;
+  /* Трек прогресс-бара: в тёмной — warm coal (era-bg-3), как в макете. */
+  --track: #221c19;
 }
 
 /* ── Слой 3: привязка semantic → утилиты Tailwind (bg-background, text-foreground…) ── */
@@ -157,6 +161,7 @@
   --color-destructive: var(--destructive);
   --color-destructive-foreground: var(--destructive-foreground);
   --color-success: var(--success);
+  --color-track: var(--track);
 }
 
 /* ── База ── */
@@ -172,6 +177,12 @@ body {
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
+}
+
+/* Тёплый градиент превью-иконки задачи (thumb). Тема-зависим через semantic-токены:
+   dark → #3a1a0a→#1a1614 (accent→secondary), light → #ffe9dd→#f2eae2 (тот же оттенок, светлый). */
+@utility thumb-gradient {
+  background-image: linear-gradient(135deg, var(--accent) 0%, var(--secondary) 70.72%);
 }
 
 /* Скрыть полосу прокрутки, сохранив сам скролл (горизонтальные чипы-фильтры на mobile). */

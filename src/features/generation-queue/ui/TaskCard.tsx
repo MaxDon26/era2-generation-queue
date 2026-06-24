@@ -51,7 +51,7 @@ export function TaskCard({
         <ProgressBar
           value={task.progress}
           aria-label="Прогресс генерации"
-          className="h-[5px] bg-era-bg-3"
+          className="h-[5px] bg-track"
         />
       )}
 

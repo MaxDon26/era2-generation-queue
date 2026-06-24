@@ -52,7 +52,7 @@ export function TaskRow({
             <ProgressBar
               value={task.progress}
               aria-label="Прогресс генерации"
-              className="mt-0.5 h-[5px] bg-era-bg-3"
+              className="mt-0.5 h-[5px] bg-track"
             />
           )}
         </div>

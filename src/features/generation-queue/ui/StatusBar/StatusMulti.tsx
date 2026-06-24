@@ -44,7 +44,7 @@ export function StatusMulti({ tasks, activeCount, avgProgress, onCollapse }: Sta
               <span className="truncate text-xs text-foreground-secondary">{task.prompt}</span>
               {task.status === 'running' && (
                 <div aria-hidden="true">
-                  <ProgressBar value={task.progress} className="h-1 bg-era-bg-3" />
+                  <ProgressBar value={task.progress} className="h-1 bg-track" />
                 </div>
               )}
             </div>

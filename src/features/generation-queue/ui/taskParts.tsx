@@ -15,7 +15,7 @@ export function TaskThumb({ type, className }: { type: GenType; className?: stri
   return (
     <div
       className={cn(
-        'flex shrink-0 items-center justify-center rounded-xl bg-[linear-gradient(135deg,#3b1a0a_0%,#1a1614_70.72%)] text-accent-foreground',
+        'thumb-gradient flex shrink-0 items-center justify-center rounded-xl text-accent-foreground',
         className,
       )}
     >
